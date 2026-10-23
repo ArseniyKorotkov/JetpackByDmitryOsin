@@ -26,10 +26,12 @@ fun Buttons(
 @Composable
 fun Profile(
     id: Int,
+    uiLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val text = if (uiLoading) "Loading..." else id
     Text(
-        text = "profile page#$id",
+        text = "profile page#$text",
         modifier = modifier
     )
 }

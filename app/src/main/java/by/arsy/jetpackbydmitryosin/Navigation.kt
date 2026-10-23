@@ -12,7 +12,11 @@ import by.arsy.jetpackbydmitryosin.MainActivity.Companion.PROFILE_DESTINATION
 import by.arsy.jetpackbydmitryosin.MainActivity.Companion.PROFILE_ID
 
 @Composable
-fun Navigation(modifier: Modifier = Modifier) {
+fun Navigation(
+    uiLoading: Boolean,
+    startLoading: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -22,7 +26,10 @@ fun Navigation(modifier: Modifier = Modifier) {
         composable(route = HOME_DESTINATION) {
             AppWrapper(modifier = modifier) {
                 Buttons(
-                    onClick = { navController.navigate(route = "$PROFILE_DESTINATION/$it") }
+                    onClick = {
+                        startLoading()
+                        navController.navigate(route = "$PROFILE_DESTINATION/$it")
+                    }
                 )
             }
         }
@@ -33,7 +40,10 @@ fun Navigation(modifier: Modifier = Modifier) {
         ) { backStackEntry ->
             backStackEntry.arguments?.getInt(/* key = */ PROFILE_ID)?.let {
                 AppWrapper(modifier = modifier) {
-                    Profile(id = it)
+                    Profile(
+                        id = it,
+                        uiLoading = uiLoading
+                    )
                 }
             }
         }

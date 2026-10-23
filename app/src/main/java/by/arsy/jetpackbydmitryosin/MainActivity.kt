@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import by.arsy.jetpackbydmitryosin.ui.theme.JetpackByDmitryOsinTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,8 +29,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             JetpackByDmitryOsinTheme {
+                val viewModel: HomeViewModel = viewModel()
+                val uiLoading by viewModel.uiState.collectAsStateWithLifecycle()
                 Scaffold { paddingValues ->
                     Navigation(
+                        uiLoading = uiLoading,
+                        startLoading = { viewModel.startLoading() },
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues)
