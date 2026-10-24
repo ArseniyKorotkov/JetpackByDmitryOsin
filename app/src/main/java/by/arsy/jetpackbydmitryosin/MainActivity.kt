@@ -4,12 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,25 +62,15 @@ fun Animation(modifier: Modifier = Modifier) {
         ) {
             var state by rememberSaveable { mutableStateOf(value = true) }
 
-            val animateTextSize by animateIntAsState(
-                targetValue = if (state) 10 else 25,
-                animationSpec = spring(dampingRatio = 0.3f)
-            )
-
-            val animateColorAsState by animateColorAsState(
-                targetValue = if (state) Color.Green else Color.Red,
-                animationSpec = tween(
-                    durationMillis = 1200,
-                    delayMillis = 50,
-                    easing = FastOutSlowInEasing
+            AnimatedVisibility(
+                visible = state,
+                enter = scaleIn(animationSpec =  spring(dampingRatio = 0.2f)),
+                exit = scaleOut(animationSpec = tween(durationMillis = 1200))
+            ) {
+                Text(
+                    text = "Animated text",
                 )
-            )
-
-            Text(
-                text = "Animated text",
-                fontSize = animateTextSize.sp,
-                color = animateColorAsState
-            )
+            }
 
             Button(
                 onClick = { state = !state }
