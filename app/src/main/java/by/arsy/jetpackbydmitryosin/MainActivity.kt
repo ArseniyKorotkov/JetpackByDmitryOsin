@@ -4,14 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,10 +24,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 import by.arsy.jetpackbydmitryosin.ui.theme.JetpackByDmitryOsinTheme
 
 class MainActivity : ComponentActivity() {
@@ -33,7 +36,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             JetpackByDmitryOsinTheme {
                 Scaffold { paddingValues ->
-                    Navigation(
+                    Animation(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues)
@@ -45,82 +48,41 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Navigation(modifier: Modifier = Modifier) {
-    val loginDestination = "login"
-    val userDestination = "user"
-    val userName = "name"
-    val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = loginDestination
+fun Animation(modifier: Modifier = Modifier) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
     ) {
-        composable(
-            route = loginDestination
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LoginScreen(
-                onLogin = { navController.navigate(route = "$userDestination/$it") },
-                modifier = modifier
+            var state by rememberSaveable { mutableStateOf(value = true) }
+
+            val animateTextSize by animateIntAsState(
+                targetValue = if (state) 10 else 25,
+                animationSpec = spring(dampingRatio = 0.3f)
             )
-        }
-        composable(
-            route = "$userDestination/{$userName}"
-        ) { navBackStackEntry ->
-            navBackStackEntry.arguments?.getString(userName)?.let {
-                UserScreen(
-                    name = it,
-                    modifier = modifier
+
+            val animateColorAsState by animateColorAsState(
+                targetValue = if (state) Color.Green else Color.Red,
+                animationSpec = tween(
+                    durationMillis = 1200,
+                    delayMillis = 50,
+                    easing = FastOutSlowInEasing
                 )
+            )
+
+            Text(
+                text = "Animated text",
+                fontSize = animateTextSize.sp,
+                color = animateColorAsState
+            )
+
+            Button(
+                onClick = { state = !state }
+            ) {
+                Text(text = "Change")
             }
         }
     }
-}
-
-@Composable
-fun LoginScreen(
-    onLogin: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var isNameError by rememberSaveable { mutableStateOf(value = false) }
-    var name by rememberSaveable { mutableStateOf("") }
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-    ) {
-        TextField(
-            value = name,
-            onValueChange = {
-                name = it
-                isNameError = false
-            },
-            placeholder = {
-                Text(text = if (isNameError) "Name can not be empty!" else "Enter your name")
-            },
-            isError = isNameError,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Button(
-            onClick = {
-                if (name.isBlank()) {
-                    isNameError = true
-                } else {
-                    onLogin(name)
-                }
-            }
-        ) {
-            Text(text = "Login")
-        }
-    }
-}
-
-@Composable
-fun UserScreen(
-    name: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = "Hello, $name!",
-        textAlign = TextAlign.Center,
-        modifier = modifier
-    )
 }
