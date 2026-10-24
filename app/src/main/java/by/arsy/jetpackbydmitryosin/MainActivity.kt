@@ -4,16 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,8 +25,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.sp
 import by.arsy.jetpackbydmitryosin.ui.theme.JetpackByDmitryOsinTheme
 
 class MainActivity : ComponentActivity() {
@@ -62,13 +57,18 @@ fun Animation(modifier: Modifier = Modifier) {
         ) {
             var state by rememberSaveable { mutableStateOf(value = true) }
 
-            AnimatedVisibility(
-                visible = state,
-                enter = scaleIn(animationSpec =  spring(dampingRatio = 0.2f)),
-                exit = scaleOut(animationSpec = tween(durationMillis = 1200))
-            ) {
+            AnimatedContent(
+                targetState = state,
+                transitionSpec = {
+                    slideInVertically(
+                        animationSpec = spring(dampingRatio = 0.18f)
+                    ) { -it } + fadeIn() togetherWith fadeOut(
+                        animationSpec = tween(durationMillis = 800)
+                    )
+                }
+            ) { targetState ->
                 Text(
-                    text = "Animated text",
+                    text = "Animated text $targetState",
                 )
             }
 
