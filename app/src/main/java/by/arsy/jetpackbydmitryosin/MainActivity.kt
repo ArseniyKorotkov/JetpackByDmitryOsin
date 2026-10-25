@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -20,18 +21,24 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import by.arsy.jetpackbydmitryosin.ui.theme.JetpackByDmitryOsinTheme
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
@@ -58,6 +65,8 @@ fun Animation(modifier: Modifier = Modifier) {
     var animatedText by rememberSaveable { mutableStateOf(value = "Animated text") }
     var offsetX by rememberSaveable { mutableFloatStateOf(value = 0f) }
     var offsetY by rememberSaveable { mutableFloatStateOf(value = 0f) }
+    val swipeState = rememberSwipeToDismissBoxState()
+    val coroutineScope = rememberCoroutineScope()
 
     Box(
         contentAlignment = Alignment.Center,
@@ -114,6 +123,27 @@ fun Animation(modifier: Modifier = Modifier) {
                     }
             ) {
                 Text("Change text")
+            }
+
+            SwipeToDismissBox(
+                state = swipeState,
+                backgroundContent = {
+                    Text(text = "Change")
+                },
+                onDismiss = {
+                    if (swipeState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+                        state = !state
+                    }
+                    coroutineScope.launch {
+                        swipeState.reset()
+                    }
+                },
+                enableDismissFromStartToEnd = false
+            ) {
+                Text(
+                    text = "<- Swipe me",
+                    modifier = Modifier.background(color = Color.Gray)
+                )
             }
         }
     }
