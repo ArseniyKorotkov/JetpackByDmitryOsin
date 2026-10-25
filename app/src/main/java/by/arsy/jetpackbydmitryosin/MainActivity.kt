@@ -11,21 +11,27 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
 import by.arsy.jetpackbydmitryosin.ui.theme.JetpackByDmitryOsinTheme
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
 
@@ -48,6 +54,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Animation(modifier: Modifier = Modifier) {
+    var animatedText by rememberSaveable { mutableStateOf(value = "Animated text") }
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -68,7 +75,7 @@ fun Animation(modifier: Modifier = Modifier) {
                 }
             ) { targetState ->
                 Text(
-                    text = "Animated text $targetState",
+                    text = "$animatedText $targetState",
                 )
             }
 
@@ -76,6 +83,20 @@ fun Animation(modifier: Modifier = Modifier) {
                 onClick = { state = !state }
             ) {
                 Text(text = "Change")
+            }
+
+            Box(
+                modifier = Modifier
+                    .pointerInput(key1 = Unit) {
+                        detectTapGestures(
+                            onTap = { animatedText = "Tap" },
+                            onDoubleTap = { animatedText = "Double Tap" },
+                            onLongPress = { animatedText = "Long press" }
+                        )
+
+                    }
+            ) {
+                Text("Change text")
             }
         }
     }
