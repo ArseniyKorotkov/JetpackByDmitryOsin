@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +56,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Animation(modifier: Modifier = Modifier) {
     var animatedText by rememberSaveable { mutableStateOf(value = "Animated text") }
+    var offsetX by rememberSaveable { mutableFloatStateOf(value = 0f) }
+    var offsetY by rememberSaveable { mutableFloatStateOf(value = 0f) }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -87,13 +91,26 @@ fun Animation(modifier: Modifier = Modifier) {
 
             Box(
                 modifier = Modifier
+                    .offset {
+                        IntOffset(
+                            x = offsetX.roundToInt(),
+                            y = offsetY.roundToInt()
+                        )
+                    }
                     .pointerInput(key1 = Unit) {
                         detectTapGestures(
                             onTap = { animatedText = "Tap" },
                             onDoubleTap = { animatedText = "Double Tap" },
                             onLongPress = { animatedText = "Long press" }
                         )
-
+                    }
+                    .pointerInput(key1 = Unit) {
+                        detectDragGestures { change, dragAmount ->
+                            change.consume()
+                            animatedText = "Drag press"
+                            offsetX += dragAmount.x
+                            offsetY += dragAmount.y
+                        }
                     }
             ) {
                 Text("Change text")
