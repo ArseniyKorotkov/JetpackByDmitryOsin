@@ -28,14 +28,9 @@ fun HeartImage(
             moveTo(x = canvasWidth, y = canvasHeight / 4)
             lineTo(x = canvasWidth / 2, y = canvasHeight)
             lineTo(x = 0f, y = canvasHeight / 4)
-            arcTo(
-                rect = Rect(
-                    center = Offset(x = radius, y = canvasHeight / 4),
-                    radius = radius
-                ),
-                startAngleDegrees = 180f,
-                sweepAngleDegrees = 180f,
-                forceMoveTo = false
+            quadraticTo(
+                x1 = radius, y1 = -canvasHeight/4,
+                x2 = canvasWidth / 2, y2 = canvasHeight / 4
             )
             arcTo(
                 rect = Rect(
@@ -65,5 +60,5 @@ fun HeartImage(
 @Preview
 @Composable
 private fun HeartImagePreview() {
-    HeartImage(modifier = Modifier.size(100.dp))
+    HeartImage(modifier = Modifier.size(80.dp, 120.dp))
 }
