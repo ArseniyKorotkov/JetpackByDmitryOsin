@@ -7,12 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -29,7 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             JetpackByDmitryOsinTheme {
                 Scaffold { paddingValues ->
-                    LoginScreen(
+                    CounterScreen(
                         modifier = Modifier.padding(paddingValues)
                     )
                 }
@@ -39,34 +41,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun LoginScreen(
+fun CounterScreen(
     modifier: Modifier = Modifier
 ) {
-    var text by rememberSaveable { mutableStateOf("") }
-    var result by rememberSaveable { mutableStateOf("") }
+    var count by rememberSaveable { mutableIntStateOf(0) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth()
     ) {
-        TextField(
-            value = text,
-            onValueChange = { text = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .testTag("input_field")
+        Text(
+            text = count.toString(),
+            modifier = Modifier.testTag("counter_value")
         )
 
         Button(
-            onClick = {
-                result = "Hello, $text"
-                text = ""
-            },
-            enabled = text.isNotBlank()
+            onClick = { count++ }
         ) {
-            Text(text = "Enter")
+            Text(text = "Increment")
         }
-
-        Text(text = result)
     }
 }
